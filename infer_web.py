@@ -846,7 +846,7 @@ while True:
 
         if function_name == 'convert':
             model_name: str = params_dict.pop('model_name')
-            input_file: str = params_dict.pop('input_audio_path')
+            input_file: str = params_dict.get('input_audio_path')
             output_path: str = params_dict.pop('output_path')
 
             print('running!')
