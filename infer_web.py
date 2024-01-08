@@ -28,6 +28,7 @@ from dotenv import load_dotenv
 import inspect
 
 # from IPython.display import clear_output
+from scipy.io import wavfile
 
 now_dir = os.getcwd()
 sys.path.append(now_dir)
@@ -845,9 +846,14 @@ while True:
 
         if function_name == 'convert':
             model_name: str = params_dict.pop('model_name')
+            input_file: str = params_dict.pop('input_audio_path')
+            output_path: str = params_dict.pop('output_path')
+
             print('running!')
             vc.get_vc(model_name)
-            print(vc.vc_single(**params_dict))
+            output1, wav_file = vc.vc_single(**params_dict)
+            wavfile.write(os.path.join(output_path, os.path.basename(input_file)), wav_file[0], wav_file[1])
+            print(output1)
         if function_name == 'process':
             for out in preprocess_dataset(**params_dict):
                 # clear_output(wait=True)
