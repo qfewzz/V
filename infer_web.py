@@ -33,7 +33,6 @@ now_dir = os.getcwd()
 sys.path.append(now_dir)
 load_dotenv()
 from infer.modules.vc.modules import VC
-"""
 from infer.modules.uvr5.modules import uvr
 from infer.lib.train.process_ckpt import (
     change_info,
@@ -41,7 +40,6 @@ from infer.lib.train.process_ckpt import (
     merge,
     show_info,
 )
-"""
 from i18n.i18n import I18nAuto
 from configs.config import Config
 from sklearn.cluster import MiniBatchKMeans
@@ -627,7 +625,6 @@ def click_train(
     print(cmd)
     print('-' * 30)
 
-
     logger.info(cmd)
     """
     p = Popen(cmd, shell=True, cwd=now_dir)
@@ -635,7 +632,8 @@ def click_train(
 """
 
     import subprocess
-    process = subprocess.Popen(cmd , shell=True, cwd=now_dir, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    process = subprocess.Popen(cmd, shell=True, cwd=now_dir, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                               text=True)
     for line in process.stdout:
         print(line.strip())
     process.wait()
@@ -845,6 +843,11 @@ while True:
             if value in global_params_dict:
                 params_dict[key] = global_params_dict[value]
 
+        if function_name == 'convert':
+            model_name: str = params_dict.pop('model_name')
+            print('running!')
+            vc.get_vc(model_name)
+            print(vc.vc_single(**params_dict))
         if function_name == 'process':
             for out in preprocess_dataset(**params_dict):
                 # clear_output(wait=True)
@@ -868,7 +871,8 @@ while True:
         print('*** end of this iteration!')
         time.sleep(2)
 
-exit(0)
+if True:
+    exit(0)
 
 with gr.Blocks(title="RVC WebUI") as app:
     gr.Markdown("## RVC WebUI")
