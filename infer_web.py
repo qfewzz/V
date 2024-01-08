@@ -834,6 +834,8 @@ print('here 5')
 while True:
     try:
         inp = input().strip()
+        if inp == 'e':
+            break
         separator_index = inp.index(' ')
         function_name = inp[0:separator_index]
         params_json = inp[separator_index + 1:]
