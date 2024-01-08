@@ -828,10 +828,20 @@ def print_locals(title, params):
     print('-' * 50)
 
 
-print('here 5')
+def get_unique_file_name(path, file_name):
+    base, ext = os.path.splitext(file_name)
+
+    for counter in range(1, 1000):
+        file_name = f"{base}_{counter}{ext}"
+        if not os.path.exists(os.path.join(path, file_name)):
+            break
+
+    return file_name
+
 
 while True:
     try:
+        print('enter you command:')
         inp = input().strip()
         if inp == 'e':
             break
@@ -845,14 +855,17 @@ while True:
                 params_dict[key] = global_params_dict[value]
 
         if function_name == 'convert':
-            model_name: str = params_dict.pop('model_name')
             input_file: str = params_dict.get('input_audio_path')
+            model_name: str = params_dict.pop('model_name')
             output_path: str = params_dict.pop('output_path')
+
+            input_file_name = os.path.basename(input_file)
+            output_file_name = get_unique_file_name(output_path, input_file_name)
 
             print('running!')
             vc.get_vc(model_name)
             output1, wav_file = vc.vc_single(**params_dict)
-            wavfile.write(os.path.join(output_path, os.path.basename(input_file)), wav_file[0], wav_file[1])
+            wavfile.write(os.path.join(output_path, output_file_name), wav_file[0], wav_file[1])
             print(output1)
         if function_name == 'process':
             for out in preprocess_dataset(**params_dict):
