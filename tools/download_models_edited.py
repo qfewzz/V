@@ -33,8 +33,8 @@ if __name__ == "__main__":
     print("Downloading pretrained models:")
 
     model_names = [
-        "f0D48k.pth",
-        "f0G48k.pth",
+        "f0D40k.pth",
+        "f0G40k.pth",
     ]
 
     rvc_models_dir = BASE_DIR / "assets/pretrained_v2"
