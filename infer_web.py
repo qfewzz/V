@@ -9,10 +9,10 @@ from configs.config import Config
 # sys.argv = sys.argv[1:]
 print(sys.argv)
 print('--------------------------------')
-# args = list(sys.argv)
-args = sys.argv
-# sys.argv = ['aaa']
+args = list(sys.argv)
+sys.argv = ['aaa']
 config = Config()
+sys.argv = args
 # print(len(sys.argv))
 # print(sys.argv[1])
 
