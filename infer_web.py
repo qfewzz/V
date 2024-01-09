@@ -978,6 +978,7 @@ def convert_dir(input_dir: str,
         wavfile.write(output_full, wav_file[0], wav_file[1])
         print('done')
 
+
 global_params_dict = {
     'dataset_directory_24': '/kaggle/input/r1111112',
     'project_name_24': 'p_3',
@@ -989,7 +990,6 @@ global_params_dict = {
     'save_small_model_24': 'No',
     'algorithm_24': 'rmvpe',
 
-
     'model_name_24': r'p_2.pth',
     'input_audio_24': r'/content/drive/MyDrive/V_finished/inputs/Yeki Berese Be Dadam - Moslem Fatahi-vocals-Media.io.m4a',
     'output_path_24': r'/content/V/logs',
@@ -999,6 +999,55 @@ global_params_dict = {
     'convert_algorithm_24': 'rmvpe',
 
 }
+
+
+def process_input(inp: str):
+    try:
+        separator_index = inp.index(' ')
+        function_name = inp[0:separator_index]
+        params_json = inp[separator_index + 1:]
+        params_dict: dict = json.loads(params_json)
+
+        for key, value in params_dict.items():
+            if value in global_params_dict:
+                params_dict[key] = global_params_dict[value]
+
+        if function_name == 'convert':
+            input_file: str = params_dict.get('input_audio_path')
+            model_name: str = params_dict.pop('model_name')
+            output_path: str = params_dict.pop('output_path')
+
+            input_file_name = os.path.basename(input_file)
+            output_file_name = get_unique_file_name(output_path, input_file_name)
+
+            print('running!')
+            vc.get_vc(model_name)
+            output1, wav_file = vc.vc_single(**params_dict)
+            wavfile.write(os.path.join(output_path, output_file_name), wav_file[0], wav_file[1])
+            print(output1)
+        if function_name == 'process':
+            for out in preprocess_dataset(**params_dict):
+                # clear_output(wait=True)
+                print(out)
+        if function_name == 'features':
+            for out in extract_f0_feature(**params_dict):
+                # clear_output(wait=True)
+                print(out)
+        if function_name == 'train_index':
+            for out in train_index(**params_dict):
+                # clear_output(wait=True)
+                print(out)
+        if function_name == 'train':
+            click_train(**params_dict)
+        else:
+            print('unknown function name')
+
+    except BaseException as e:
+        print(e)
+    finally:
+        print('*** end of this iteration!')
+
+
 """
 def input0(loop: bool = True):
     while True:
@@ -1055,26 +1104,17 @@ def input0(loop: bool = True):
             time.sleep(2)
 """
 
-a:dict = json.loads("""{"trainset_dir": "dataset_directory_24", "exp_dir": "project_name_24", "sr": "sample_rate_24", "n_p": "cpu_cores_24"}""")
-b:dict = json.loads("""{"gpus": "", "n_p": "cpu_cores_24", "f0method": "train_algorithm_24", "if_f0": true, "exp_dir": "project_name_24", "version19": "version_24", "gpus_rmvpe": ""}""")
-c:dict = json.loads("""{"exp_dir1": "project_name_24", "version19": "version_24"}""")
-d:dict = json.loads("""{"exp_dir1": "project_name_24", "sr2": "sample_rate_24", "if_f0_3": true, "spk_id5": 0, "save_epoch10": "save_every_epoch_24", "total_epoch11": "epoches_24", "batch_size12": 16, "if_save_latest13": "No", "pretrained_G14": "assets/pretrained_v2/f0G48k.pth", "pretrained_D15": "assets/pretrained_v2/f0D48k.pth", "gpus16": "", "if_cache_gpu17": "Yes", "if_save_every_weights18": "save_small_model_24", "version19": "version_24"}""")
+inputs = [
+    """process {"trainset_dir": "dataset_directory_24", "exp_dir": "project_name_24", "sr": "sample_rate_24", "n_p": "cpu_cores_24"}""",
+    """features {"gpus": "", "n_p": "cpu_cores_24", "f0method": "train_algorithm_24", "if_f0": true, "exp_dir": "project_name_24", "version19": "version_24", "gpus_rmvpe": ""}""",
+    """train_index {"exp_dir1": "project_name_24", "version19": "version_24"}""",
+    """train {"exp_dir1": "project_name_24", "sr2": "sample_rate_24", "if_f0_3": true, "spk_id5": 0, "save_epoch10": "save_every_epoch_24", "total_epoch11": "epoches_24", "batch_size12": 16, "if_save_latest13": "No", "pretrained_G14": "assets/pretrained_v2/f0G48k.pth", "pretrained_D15": "assets/pretrained_v2/f0D48k.pth", "gpus16": "", "if_cache_gpu17": "Yes", "if_save_every_weights18": "save_small_model_24", "version19": "version_24"}"""
+]
 
-for out in preprocess_dataset(**a):
-    # clear_output(wait=True)
-    print(out)
+for input in inputs:
+    process_input(input)
 
-for out in extract_f0_feature(**b):
-    # clear_output(wait=True)
-    print(out)
-    
-for out in train_index(**c):
-    # clear_output(wait=True)
-    print(out)
-    
-click_train(**d)
-                
-                
+print('*'*50)
 # if 'input0' in args:
 #     input0(False)
 # elif 'input0_loop' in args:
