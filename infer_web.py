@@ -1088,7 +1088,7 @@ if 'run' in args:
         """process {"trainset_dir": "dataset_directory_24", "exp_dir": "project_name_24", "sr": "sample_rate_24", "n_p": "cpu_cores_24"}""",
         """features {"gpus": "", "n_p": "cpu_cores_24", "f0method": "train_algorithm_24", "if_f0": true, "exp_dir": "project_name_24", "version19": "version_24", "gpus_rmvpe": "0-1"}""",
         """train_index {"exp_dir1": "project_name_24", "version19": "version_24"}""",
-        """train {"exp_dir1": "project_name_24", "sr2": "sample_rate_24", "if_f0_3": true, "spk_id5": 0, "save_epoch10": "save_every_epoch_24", "total_epoch11": "epoches_24", "batch_size12": 16, "if_save_latest13": "No", "pretrained_G14": "assets/pretrained_v2/f0G48k.pth", "pretrained_D15": "assets/pretrained_v2/f0D48k.pth", "gpus16": "", "if_cache_gpu17": "Yes", "if_save_every_weights18": "save_small_model_24", "version19": "version_24"}"""
+        """train {"exp_dir1": "project_name_24", "sr2": "sample_rate_24", "if_f0_3": true, "spk_id5": 0, "save_epoch10": "save_every_epoch_24", "total_epoch11": "epoches_24", "batch_size12": 16, "if_save_latest13": "No", "pretrained_G14": "assets/pretrained_v2/f0G48k.pth", "pretrained_D15": "assets/pretrained_v2/f0D48k.pth", "gpus16": "0-1", "if_cache_gpu17": "Yes", "if_save_every_weights18": "save_small_model_24", "version19": "version_24"}"""
     ]
     global_params_dict = {
         'dataset_directory_24': '/kaggle/input/r1111112',
