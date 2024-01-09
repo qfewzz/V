@@ -1023,8 +1023,7 @@ def process_input(global_params_dict: dict, inp: str):
         elif function_name == 'features':
             for out in extract_f0_feature(**params_dict):
                 # clear_output(wait=True)
-                print(out)
-                print('*' * 50)
+                print(out.strip())
         elif function_name == 'train_index':
             for out in train_index(**params_dict):
                 # clear_output(wait=True)
