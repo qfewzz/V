@@ -2,6 +2,10 @@ import os
 import sys
 import traceback
 
+print('-'*50)
+print(sys.argv)
+print('-'*50)
+
 import parselmouth
 
 now_dir = os.getcwd()
@@ -140,6 +144,7 @@ class FeatureInput(object):
 
 
 if __name__ == "__main__":
+
     # exp_dir=r"E:\codes\py39\dataset\mi-test"
     # n_p=16
     # f = open("%s/log_extract_f0.log"%exp_dir, "w")
