@@ -408,12 +408,18 @@ def extract_f0_feature(gpus, n_p, f0method, if_f0, exp_dir, version19, gpus_rmvp
     ).start()
     while 1:
         with open("%s/logs/%s/extract_f0_feature.log" % (now_dir, exp_dir), "r") as f:
-            yield (f.read())
+            log = f.read()
+            yield log.removeprefix(last_log)
+            last_log = log
+            logger.info(log)
         sleep(1)
         if done[0]:
             break
     with open("%s/logs/%s/extract_f0_feature.log" % (now_dir, exp_dir), "r") as f:
         log = f.read()
+        yield log.removeprefix(last_log)
+        last_log = log
+        logger.info(log)
     logger.info(log)
     yield log
 
@@ -1018,6 +1024,7 @@ def process_input(global_params_dict: dict, inp: str):
             for out in extract_f0_feature(**params_dict):
                 # clear_output(wait=True)
                 print(out)
+                print('*' * 50)
         elif function_name == 'train_index':
             for out in train_index(**params_dict):
                 # clear_output(wait=True)
