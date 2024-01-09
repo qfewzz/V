@@ -2,13 +2,18 @@ import sys
 import json
 import base64
 import time
+from configs.config import Config
 
-sys.argv = ['aaa']
+
 # print(sys.argv)
 # sys.argv = list(sys.argv[0:1])
 # sys.argv = sys.argv[1:]
-# print(sys.argv)
+print(sys.argv)
 print('--------------------------------')
+sys.exit()
+args = list(sys.argv)
+sys.argv = ['aaa']
+config = Config()
 # print(len(sys.argv))
 # print(sys.argv[1])
 
@@ -42,7 +47,6 @@ from infer.lib.train.process_ckpt import (
     show_info,
 )
 from i18n.i18n import I18nAuto
-from configs.config import Config
 from sklearn.cluster import MiniBatchKMeans
 import torch
 import numpy as np
@@ -76,7 +80,6 @@ os.environ["TEMP"] = tmp
 warnings.filterwarnings("ignore")
 torch.manual_seed(114514)
 
-config = Config()
 vc = VC(config)
 
 if config.dml == True:
@@ -977,8 +980,7 @@ def convert_dir(input_dir: str,
         wavfile.write(output_full, wav_file[0], wav_file[1])
         print('done')
 
-
-def loop_input():
+def input0(loop:bool=True):
     while True:
         try:
             print('enter you command:')
@@ -1028,8 +1030,15 @@ def loop_input():
             print(e)
         finally:
             print('*** end of this iteration!')
+            if not loop:
+                break
             time.sleep(2)
 
+
+if 'input0' in args:
+    input0(False)
+elif 'input0_loop':
+    input0(True)
 
 """
 with gr.Blocks(title="RVC WebUI") as app:
