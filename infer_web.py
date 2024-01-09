@@ -272,6 +272,8 @@ def preprocess_dataset(trainset_dir, exp_dir, sr, n_p):
 
 # but2.click(extract_f0,[gpus6,np7,f0method8,if_f0_3,trainset_dir4],[info2])
 def extract_f0_feature(gpus, n_p, f0method, if_f0, exp_dir, version19, gpus_rmvpe):
+    last_log = ''
+    log = ''
     print_locals('extract_features', locals())
     gpus = gpus.split("-")
     os.makedirs("%s/logs/%s" % (now_dir, exp_dir), exist_ok=True)
@@ -289,6 +291,7 @@ def extract_f0_feature(gpus, n_p, f0method, if_f0, exp_dir, version19, gpus_rmvp
                         f0method,
                     )
             )
+            print(cmd)
             logger.info(cmd)
             p = Popen(
                 cmd, shell=True, cwd=now_dir
@@ -344,6 +347,7 @@ def extract_f0_feature(gpus, n_p, f0method, if_f0, exp_dir, version19, gpus_rmvp
                             exp_dir,
                         )
                 )
+                print(cmd)
                 logger.info(cmd)
                 p = Popen(
                     cmd, shell=True, cwd=now_dir
@@ -351,17 +355,18 @@ def extract_f0_feature(gpus, n_p, f0method, if_f0, exp_dir, version19, gpus_rmvp
                 p.wait()
                 done = [True]
         while 1:
-            with open(
-                    "%s/logs/%s/extract_f0_feature.log" % (now_dir, exp_dir), "r"
-            ) as f:
-                yield (f.read())
+            with open("%s/logs/%s/extract_f0_feature.log" % (now_dir, exp_dir), "r") as f:
+                log = f.read()
+                yield log.removeprefix(last_log)
+                last_log = log
             sleep(1)
             if done[0]:
                 break
         with open("%s/logs/%s/extract_f0_feature.log" % (now_dir, exp_dir), "r") as f:
             log = f.read()
-        logger.info(log)
-        yield log
+            yield log.removeprefix(last_log)
+            last_log = log
+            logger.info(log)
     # 对不同part分别开多进程
     """
     n_part=int(sys.argv[1])
@@ -1026,6 +1031,7 @@ def process_input(global_params_dict: dict, inp: str):
         print(e)
     finally:
         print('*** end of this iteration!')
+
 
 """
 def input0(loop: bool = True):
