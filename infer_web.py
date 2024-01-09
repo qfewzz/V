@@ -979,8 +979,7 @@ def convert_dir(input_dir: str,
         print('done')
 
 
-def process_input(inp: str):
-    global global_params_dict
+def process_input(global_params_dict:dict, inp: str):
     try:
         separator_index = inp.index(' ')
         function_name = inp[0:separator_index]
