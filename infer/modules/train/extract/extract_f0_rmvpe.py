@@ -2,6 +2,10 @@ import os
 import sys
 import traceback
 
+print('-'*50)
+print(sys.argv)
+print('-'*50)
+
 import parselmouth
 
 now_dir = os.getcwd()
