@@ -10,9 +10,8 @@ from configs.config import Config
 print(sys.argv)
 print('--------------------------------')
 # args = list(sys.argv)
-args = ['input']
-
-sys.argv = ['aaa']
+args = sys.argv
+# sys.argv = ['aaa']
 config = Config()
 # print(len(sys.argv))
 # print(sys.argv[1])
