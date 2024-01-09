@@ -320,6 +320,7 @@ def extract_f0_feature(gpus, n_p, f0method, if_f0, exp_dir, version19, gpus_rmvp
                                 config.is_half,
                             )
                     )
+                    print(cmd)
                     logger.info(cmd)
                     p = Popen(
                         cmd, shell=True, cwd=now_dir
@@ -979,7 +980,7 @@ def convert_dir(input_dir: str,
         print('done')
 
 
-def process_input(global_params_dict:dict, inp: str):
+def process_input(global_params_dict: dict, inp: str):
     try:
         separator_index = inp.index(' ')
         function_name = inp[0:separator_index]
@@ -1003,19 +1004,19 @@ def process_input(global_params_dict:dict, inp: str):
             output1, wav_file = vc.vc_single(**params_dict)
             wavfile.write(os.path.join(output_path, output_file_name), wav_file[0], wav_file[1])
             print(output1)
-        if function_name == 'process':
+        elif function_name == 'process':
             for out in preprocess_dataset(**params_dict):
                 # clear_output(wait=True)
                 print(out)
-        if function_name == 'features':
+        elif function_name == 'features':
             for out in extract_f0_feature(**params_dict):
                 # clear_output(wait=True)
                 print(out)
-        if function_name == 'train_index':
+        elif function_name == 'train_index':
             for out in train_index(**params_dict):
                 # clear_output(wait=True)
                 print(out)
-        if function_name == 'train':
+        elif function_name == 'train':
             click_train(**params_dict)
         else:
             print('unknown function name')
@@ -1025,8 +1026,7 @@ def process_input(global_params_dict:dict, inp: str):
     finally:
         print('*** end of this iteration!')
 
-
-
+"""
 def input0(loop: bool = True):
     global global_params_dict
     while True:
@@ -1082,6 +1082,8 @@ def input0(loop: bool = True):
                 break
             time.sleep(2)
 
+"""
+
 if 'run' in args:
     inputs = [
         """process {"trainset_dir": "dataset_directory_24", "exp_dir": "project_name_24", "sr": "sample_rate_24", "n_p": "cpu_cores_24"}""",
@@ -1111,10 +1113,7 @@ if 'run' in args:
     }
     for input in inputs:
         process_input(input)
-    print('*'*50)
-elif 'input' in args:
-    input0(True)
-
+    print('*' * 50)
 
 """
 with gr.Blocks(title="RVC WebUI") as app:
