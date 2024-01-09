@@ -10,7 +10,6 @@ from configs.config import Config
 # sys.argv = sys.argv[1:]
 print(sys.argv)
 print('--------------------------------')
-sys.exit()
 args = list(sys.argv)
 sys.argv = ['aaa']
 config = Config()
