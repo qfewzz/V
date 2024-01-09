@@ -4,7 +4,6 @@ import base64
 import time
 from configs.config import Config
 
-
 # print(sys.argv)
 # sys.argv = list(sys.argv[0:1])
 # sys.argv = sys.argv[1:]
@@ -979,7 +978,29 @@ def convert_dir(input_dir: str,
         wavfile.write(output_full, wav_file[0], wav_file[1])
         print('done')
 
-def input0(loop:bool=True):
+global_params_dict = {
+    'dataset_directory_24': '/kaggle/input/r1111112',
+    'project_name_24': 'p_3',
+    'cpu_cores_24': 4,
+    'sample_rate_24': '48k',
+    'version_24': 'v2',
+    'save_every_epoch_24': 10,
+    'epoches_24': 30,
+    'save_small_model_24': 'No',
+    'algorithm_24': 'rmvpe',
+
+
+    'model_name_24': r'p_2.pth',
+    'input_audio_24': r'/content/drive/MyDrive/V_finished/inputs/Yeki Berese Be Dadam - Moslem Fatahi-vocals-Media.io.m4a',
+    'output_path_24': r'/content/V/logs',
+    'index_file_24': r'/content/drive/MyDrive/V_finished/p_2/added_IVF138_Flat_nprobe_1_p_2_v2.index',
+    'strength_24': 1.0,
+    'volume_mimick_24': 0.25,
+    'convert_algorithm_24': 'rmvpe',
+
+}
+"""
+def input0(loop: bool = True):
     while True:
         try:
             print('enter you command:')
@@ -1032,12 +1053,32 @@ def input0(loop:bool=True):
             if not loop:
                 break
             time.sleep(2)
+"""
 
+a:dict = json.loads("""{"trainset_dir": "dataset_directory_24", "exp_dir": "project_name_24", "sr": "sample_rate_24", "n_p": "cpu_cores_24"}""")
+b:dict = json.loads("""{"gpus": "", "n_p": "cpu_cores_24", "f0method": "train_algorithm_24", "if_f0": true, "exp_dir": "project_name_24", "version19": "version_24", "gpus_rmvpe": ""}""")
+c:dict = json.loads("""{"exp_dir1": "project_name_24", "version19": "version_24"}""")
+d:dict = json.loads("""{"exp_dir1": "project_name_24", "sr2": "sample_rate_24", "if_f0_3": true, "spk_id5": 0, "save_epoch10": "save_every_epoch_24", "total_epoch11": "epoches_24", "batch_size12": 16, "if_save_latest13": "No", "pretrained_G14": "assets/pretrained_v2/f0G48k.pth", "pretrained_D15": "assets/pretrained_v2/f0D48k.pth", "gpus16": "", "if_cache_gpu17": "Yes", "if_save_every_weights18": "save_small_model_24", "version19": "version_24"}""")
 
-if 'input0' in args:
-    input0(False)
-elif 'input0_loop':
-    input0(True)
+for out in preprocess_dataset(**a):
+    # clear_output(wait=True)
+    print(out)
+
+for out in extract_f0_feature(**b):
+    # clear_output(wait=True)
+    print(out)
+    
+for out in train_index(**c):
+    # clear_output(wait=True)
+    print(out)
+    
+click_train(**d)
+                
+                
+# if 'input0' in args:
+#     input0(False)
+# elif 'input0_loop' in args:
+#     input0(True)
 
 """
 with gr.Blocks(title="RVC WebUI") as app:
