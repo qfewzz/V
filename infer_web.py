@@ -9,7 +9,9 @@ from configs.config import Config
 # sys.argv = sys.argv[1:]
 print(sys.argv)
 print('--------------------------------')
-args = list(sys.argv)
+# args = list(sys.argv)
+args = ['input']
+
 sys.argv = ['aaa']
 config = Config()
 # print(len(sys.argv))
@@ -62,7 +64,6 @@ import threading
 import shutil
 import logging
 
-print('here 1')
 logging.getLogger("numba").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
@@ -979,29 +980,8 @@ def convert_dir(input_dir: str,
         print('done')
 
 
-global_params_dict = {
-    'dataset_directory_24': '/kaggle/input/r1111112',
-    'project_name_24': 'p_3',
-    'cpu_cores_24': 4,
-    'sample_rate_24': '48k',
-    'version_24': 'v2',
-    'save_every_epoch_24': 10,
-    'epoches_24': 30,
-    'save_small_model_24': 'No',
-    'algorithm_24': 'rmvpe',
-
-    'model_name_24': r'p_2.pth',
-    'input_audio_24': r'/content/drive/MyDrive/V_finished/inputs/Yeki Berese Be Dadam - Moslem Fatahi-vocals-Media.io.m4a',
-    'output_path_24': r'/content/V/logs',
-    'index_file_24': r'/content/drive/MyDrive/V_finished/p_2/added_IVF138_Flat_nprobe_1_p_2_v2.index',
-    'strength_24': 1.0,
-    'volume_mimick_24': 0.25,
-    'convert_algorithm_24': 'rmvpe',
-
-}
-
-
 def process_input(inp: str):
+    global global_params_dict
     try:
         separator_index = inp.index(' ')
         function_name = inp[0:separator_index]
@@ -1048,8 +1028,9 @@ def process_input(inp: str):
         print('*** end of this iteration!')
 
 
-"""
+
 def input0(loop: bool = True):
+    global global_params_dict
     while True:
         try:
             print('enter you command:')
@@ -1102,23 +1083,40 @@ def input0(loop: bool = True):
             if not loop:
                 break
             time.sleep(2)
-"""
 
-inputs = [
-    """process {"trainset_dir": "dataset_directory_24", "exp_dir": "project_name_24", "sr": "sample_rate_24", "n_p": "cpu_cores_24"}""",
-    """features {"gpus": "", "n_p": "cpu_cores_24", "f0method": "train_algorithm_24", "if_f0": true, "exp_dir": "project_name_24", "version19": "version_24", "gpus_rmvpe": ""}""",
-    """train_index {"exp_dir1": "project_name_24", "version19": "version_24"}""",
-    """train {"exp_dir1": "project_name_24", "sr2": "sample_rate_24", "if_f0_3": true, "spk_id5": 0, "save_epoch10": "save_every_epoch_24", "total_epoch11": "epoches_24", "batch_size12": 16, "if_save_latest13": "No", "pretrained_G14": "assets/pretrained_v2/f0G48k.pth", "pretrained_D15": "assets/pretrained_v2/f0D48k.pth", "gpus16": "", "if_cache_gpu17": "Yes", "if_save_every_weights18": "save_small_model_24", "version19": "version_24"}"""
-]
+if 'run' in args:
+    inputs = [
+        """process {"trainset_dir": "dataset_directory_24", "exp_dir": "project_name_24", "sr": "sample_rate_24", "n_p": "cpu_cores_24"}""",
+        """features {"gpus": "", "n_p": "cpu_cores_24", "f0method": "train_algorithm_24", "if_f0": true, "exp_dir": "project_name_24", "version19": "version_24", "gpus_rmvpe": "0-1"}""",
+        """train_index {"exp_dir1": "project_name_24", "version19": "version_24"}""",
+        """train {"exp_dir1": "project_name_24", "sr2": "sample_rate_24", "if_f0_3": true, "spk_id5": 0, "save_epoch10": "save_every_epoch_24", "total_epoch11": "epoches_24", "batch_size12": 16, "if_save_latest13": "No", "pretrained_G14": "assets/pretrained_v2/f0G48k.pth", "pretrained_D15": "assets/pretrained_v2/f0D48k.pth", "gpus16": "", "if_cache_gpu17": "Yes", "if_save_every_weights18": "save_small_model_24", "version19": "version_24"}"""
+    ]
+    global_params_dict = {
+        'dataset_directory_24': '/kaggle/input/r1111112',
+        # 'dataset_directory_24': r'F:/MOVED/projects/pycharmProjects/rvc/_dataset_old',
+        'project_name_24': 'p_3',
+        'cpu_cores_24': 4,
+        'sample_rate_24': '48k',
+        'version_24': 'v2',
+        'save_every_epoch_24': 50,
+        'epoches_24': 300,
+        'save_small_model_24': 'No',
+        'algorithm_24': 'rmvpe_gpu',
 
-for input in inputs:
-    process_input(input)
+        'model_name_24': r'p_2.pth',
+        'input_audio_24': r'/content/drive/MyDrive/V_finished/inputs/Yeki Berese Be Dadam - Moslem Fatahi-vocals-Media.io.m4a',
+        'output_path_24': r'/content/V/logs',
+        'index_file_24': r'/content/drive/MyDrive/V_finished/p_2/added_IVF138_Flat_nprobe_1_p_2_v2.index',
+        'strength_24': 1.0,
+        'volume_mimick_24': 0.25,
+        'convert_algorithm_24': 'rmvpe',
+    }
+    for input in inputs:
+        process_input(input)
+    print('*'*50)
+elif 'input' in args:
+    input0(True)
 
-print('*'*50)
-# if 'input0' in args:
-#     input0(False)
-# elif 'input0_loop' in args:
-#     input0(True)
 
 """
 with gr.Blocks(title="RVC WebUI") as app:
