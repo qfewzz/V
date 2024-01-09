@@ -839,60 +839,199 @@ def get_unique_file_name(path, file_name):
     return file_name
 
 
-while True:
-    try:
-        print('enter you command:')
-        inp = input().strip()
-        if inp == 'e':
-            break
-        separator_index = inp.index(' ')
-        function_name = inp[0:separator_index]
-        params_json = inp[separator_index + 1:]
-        params_dict: dict = json.loads(params_json)
+def copy_file(source_path, destination_path, chunk_size=8192):
+    with open(source_path, 'rb') as source_file, open(destination_path, 'wb') as destination_file:
+        while chunk := source_file.read(chunk_size):
+            destination_file.write(chunk)
 
-        for key, value in params_dict.items():
-            if value in global_params_dict:
-                params_dict[key] = global_params_dict[value]
 
-        if function_name == 'convert':
-            input_file: str = params_dict.get('input_audio_path')
-            model_name: str = params_dict.pop('model_name')
-            output_path: str = params_dict.pop('output_path')
+def is_file_in_directory(file_path, directory_path):
+    # Get the absolute paths for both the file and the directory
+    abs_file_path = os.path.abspath(file_path)
+    abs_directory_path = os.path.abspath(directory_path)
 
-            input_file_name = os.path.basename(input_file)
-            output_file_name = get_unique_file_name(output_path, input_file_name)
+    # Check if the file is inside the directory
+    return abs_file_path.startswith(abs_directory_path + os.sep)
 
-            print('running!')
-            vc.get_vc(model_name)
-            output1, wav_file = vc.vc_single(**params_dict)
-            wavfile.write(os.path.join(output_path, output_file_name), wav_file[0], wav_file[1])
-            print(output1)
-        if function_name == 'process':
-            for out in preprocess_dataset(**params_dict):
-                # clear_output(wait=True)
-                print(out)
-        if function_name == 'features':
-            for out in extract_f0_feature(**params_dict):
-                # clear_output(wait=True)
-                print(out)
-        if function_name == 'train_index':
-            for out in train_index(**params_dict):
-                # clear_output(wait=True)
-                print(out)
-        if function_name == 'train':
-            click_train(**params_dict)
-        else:
-            print('unknown function name')
 
-    except BaseException as e:
-        print(e)
-    finally:
-        print('*** end of this iteration!')
-        time.sleep(2)
+def is_string_a_directory(s):
+    return s.endswith('\\') or s.endswith('/') or ('.' not in os.path.basename(s))
 
-if True:
-    exit(0)
 
+audio_extensions = ('.mp3', '.wav', '.flac', '.ogg', '.aac', '.m4a', '.wma', '.ape')
+
+
+def list_audio_files(directory_path):
+    audio_files = [
+        os.path.join(directory_path, file)
+        for file in os.listdir(directory_path)
+        if os.path.isfile(os.path.join(directory_path, file)) and file.lower().endswith(audio_extensions)
+    ]
+
+    return audio_files
+
+
+def convert_file(input: str,
+                 output: str,
+                 model_file_full: str,
+                 index_file_full: str,
+                 algorithm: str = 'rmvpe',
+                 strength: float = 1,
+                 volume_loudness: float = 0.25):
+    print('running!')
+    input = os.path.abspath(input)
+    input_file_name = os.path.basename(input)
+    index_file_full = os.path.abspath(index_file_full)
+    model_file_full = os.path.abspath(model_file_full)
+    output = os.path.abspath(output)
+
+    if not is_file_in_directory(model_file_full, './assets/weights'):
+        print('copying model file to weights folder...')
+        copy_file(model_file_full, os.path.join('./assets/weights', os.path.basename(model_file_full)))
+
+    if is_string_a_directory(output):
+        os.makedirs(output, exist_ok=True)
+        input_file_name_without_extension = os.path.splitext(input_file_name)[0]
+        output_file_name = get_unique_file_name(output, f'{input_file_name_without_extension}.wav')
+        output_file_full = os.path.join(output, output_file_name)
+    else:
+        output_file_dir = os.path.dirname(output)
+        output_file_name = os.path.basename(output)
+        name, ext = os.path.splitext(output_file_name)
+        output_file_name = get_unique_file_name(output_file_dir, f'{name}.wav')
+        output_file_full = os.path.join(output_file_dir, output_file_name)
+
+    vc.get_vc(os.path.basename(model_file_full))
+    output_print, wav_file = vc.vc_single(
+        sid=0,
+        input_audio_path=input,
+        f0_up_key=0.0,
+        f0_file=None,
+        f0_method=algorithm,
+        file_index=index_file_full,
+        file_index2=index_file_full,
+        index_rate=strength,
+        filter_radius=3,
+        resample_sr=0,
+        rms_mix_rate=volume_loudness,
+        protect=0.33)
+
+    print(output_print)
+    wavfile.write(output_file_full, wav_file[0], wav_file[1])
+    print('done')
+
+
+def convert_dir(input_dir: str,
+                output_dir: str,
+                model_file_full: str,
+                index_file_full: str,
+                algorithm: str = 'rmvpe',
+                strength: float = 1,
+                volume_loudness: float = 0.25):
+    print('running!')
+    input_dir = os.path.abspath(input_dir)
+    index_file_full = os.path.abspath(index_file_full)
+    model_file_full = os.path.abspath(model_file_full)
+    output_dir = os.path.abspath(output_dir)
+
+    if not is_file_in_directory(model_file_full, './assets/weights'):
+        print('copying model file to weights folder...')
+        copy_file(model_file_full, os.path.join('./assets/weights', os.path.basename(model_file_full)))
+
+    """
+    if is_string_a_directory(output):
+        os.makedirs(output, exist_ok=True)
+        input_file_name_without_extension = os.path.splitext(input_file_name)[0]
+        output_file_name = get_unique_file_name(output, f'{input_file_name_without_extension}.wav')
+        output_file_full = os.path.join(output, output_file_name)
+    else:
+        output_file_dir = os.path.dirname(output)
+        output_file_name = os.path.basename(output)
+        name, ext = os.path.splitext(output_file_name)
+        output_file_name = get_unique_file_name(output_file_dir, f'{name}.wav')
+        output_file_full = os.path.join(output_file_dir, output_file_name)
+"""
+    vc.get_vc(os.path.basename(model_file_full))
+
+    for audio_file in list_audio_files(input_dir):
+        output_print, wav_file = vc.vc_single(
+            sid=0,
+            input_audio_path=audio_file,
+            f0_up_key=0.0,
+            f0_file=None,
+            f0_method=algorithm,
+            file_index=index_file_full,
+            file_index2=index_file_full,
+            index_rate=strength,
+            filter_radius=3,
+            resample_sr=0,
+            rms_mix_rate=volume_loudness,
+            protect=0.33)
+
+        print(output_print)
+
+        input_name_only = os.path.splitext(os.path.basename(audio_file))[0]
+        input_name = get_unique_file_name(output_dir, f'{input_name_only}.wav')
+        output_full = os.path.join(output_dir, input_name)
+
+        wavfile.write(output_full, wav_file[0], wav_file[1])
+        print('done')
+
+
+def loop_input():
+    while True:
+        try:
+            print('enter you command:')
+            inp = input().strip()
+            if inp == 'e':
+                break
+            separator_index = inp.index(' ')
+            function_name = inp[0:separator_index]
+            params_json = inp[separator_index + 1:]
+            params_dict: dict = json.loads(params_json)
+
+            for key, value in params_dict.items():
+                if value in global_params_dict:
+                    params_dict[key] = global_params_dict[value]
+
+            if function_name == 'convert':
+                input_file: str = params_dict.get('input_audio_path')
+                model_name: str = params_dict.pop('model_name')
+                output_path: str = params_dict.pop('output_path')
+
+                input_file_name = os.path.basename(input_file)
+                output_file_name = get_unique_file_name(output_path, input_file_name)
+
+                print('running!')
+                vc.get_vc(model_name)
+                output1, wav_file = vc.vc_single(**params_dict)
+                wavfile.write(os.path.join(output_path, output_file_name), wav_file[0], wav_file[1])
+                print(output1)
+            if function_name == 'process':
+                for out in preprocess_dataset(**params_dict):
+                    # clear_output(wait=True)
+                    print(out)
+            if function_name == 'features':
+                for out in extract_f0_feature(**params_dict):
+                    # clear_output(wait=True)
+                    print(out)
+            if function_name == 'train_index':
+                for out in train_index(**params_dict):
+                    # clear_output(wait=True)
+                    print(out)
+            if function_name == 'train':
+                click_train(**params_dict)
+            else:
+                print('unknown function name')
+
+        except BaseException as e:
+            print(e)
+        finally:
+            print('*** end of this iteration!')
+            time.sleep(2)
+
+
+"""
 with gr.Blocks(title="RVC WebUI") as app:
     gr.Markdown("## RVC WebUI")
     gr.Markdown(
@@ -1643,3 +1782,4 @@ with gr.Blocks(title="RVC WebUI") as app:
             server_port=config.listen_port,
             quiet=True,
         )
+"""
