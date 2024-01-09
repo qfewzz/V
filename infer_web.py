@@ -386,6 +386,7 @@ def extract_f0_feature(gpus, n_p, f0method, if_f0, exp_dir, version19, gpus_rmvp
                     version19,
                 )
         )
+        print(cmd)
         logger.info(cmd)
         p = Popen(
             cmd, shell=True, cwd=now_dir
